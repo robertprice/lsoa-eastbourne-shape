@@ -11,3 +11,21 @@ library(rgdal)
 lsoa <- readOGR(".", "eastbourne_lsoa", verbose = FALSE)
 plot(lsoa, border = "black")
 ```
+
+The LSOA map can be drawn in R and overlaid on a Google Map using the following code.
+
+```r
+setwd('/path/to/lsoa-eastbourne-shape')
+
+library(rgdal)
+library(ggmap)
+library(ggplot2)
+library(maptools)
+
+lsoa <- readOGR(".", "eastbourne_lsoa", verbose = FALSE)
+lsoa <- spTransform(lsoa, CRS("+init=epsg:4326"))
+lsoa.f <- fortify(lsoa, region="LSOA11CD")
+bb <- as.vector(lsoa@bbox)
+map <- get_map(location = bb, maptype = "roadmap", color = "bw", zoom = 12)
+ggmap(map, extent = "device") + geom_polygon(data = lsoa.f, aes(long,lat, group=group), colour = "black", size = 0.2, fill = NA)
+```
